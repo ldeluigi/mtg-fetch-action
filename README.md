@@ -9,7 +9,8 @@ Add `.github/workflows/mtg-card-fetch.yml` to your workflows (just copy and past
 Or use it in your own workflow that reacts to `issues`, `pull_request`, `issue_comment`, `pull_request_comment`:
 ```yaml
 # .github/workflows/mtg-card-fetch.yml
-name: "Mtg Fetch Cards"
+name: Mtg Card Fetch Bot
+
 on:
   issue_comment:
     types: [created]
@@ -21,12 +22,13 @@ on:
     type: [submitted]
 
 jobs:
-  comment-run:
-    runs-on: ubuntu-18.04
+  fetch-card-references:
+    name: Fetch MTG Card
+    runs-on: ubuntu-latest
     steps:
-    - uses: ldeluigi/mtg-fetch-action@v1
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ldeluigi/mtg-fetch-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 
