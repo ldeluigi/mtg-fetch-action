@@ -4,7 +4,7 @@
 
 ## Usage
 
-Add `.github/workflows/mtg-card-fetch.yml` to your workflows (just copy and paste from [the source](https://raw.githubusercontent.com/ldeluigi/mtg-fetch-action/master/.github/workflows/mtg-card-fetch.yml)).
+Add `.github/workflows/mtg-card-fetch.yml` to your workflows (just copy and paste from [the source](https://github.com/ldeluigi/mtg-fetch-action/blob/master/.github/workflows/mtg-card-fetch.yml)).
 
 Or use it in your own workflow that reacts to `issues`, `pull_request`, `issue_comment`, `pull_request_comment`:
 ```yaml
