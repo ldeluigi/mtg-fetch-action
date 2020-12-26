@@ -26,10 +26,10 @@ const jaro_winkler_1 = __importDefault(__webpack_require__(221));
 const scryfallEndpoint = 'https://api.scryfall.com/cards/search?q=';
 const edhrecRegex = new RegExp(/(?<=\{\{)(.*?)(?=\}\})/g);
 const gathererRegex = new RegExp(/(?<=\[\[)(.*?)(?=\]\])/g);
-const legalityRegex = new RegExp(/(?<=\<\<)(.*?)(?=\>\>)/g);
+const legalityRegex = new RegExp(/(?<=<<)(.*?)(?=>>)/g);
 const pricingRegex = new RegExp(/(?<=\(\()(.*?)(?=\)\))/g);
 function sendPricingInfo(card) {
-    let data = {
+    const data = {
         title: `${card.name} - TCGPlayer pricing`,
         url: card.purchase_uris.tcgplayer,
         image: {
@@ -40,11 +40,11 @@ function sendPricingInfo(card) {
 }
 function sendLegalityInfo(card) {
     let legaityString = '';
-    Object.entries(card.legalities).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(card.legalities)) {
         const legal = value.replace(new RegExp('_', 'g'), ' ');
         legaityString += `${key}: ${legal}\n`;
-    });
-    let data = {
+    }
+    const data = {
         title: `${card.name} - Legalities`,
         description: legaityString
     };
@@ -125,19 +125,19 @@ function searchForCards(message) {
     return __awaiter(this, void 0, void 0, function* () {
         const edhrecCards = message.match(edhrecRegex);
         if (edhrecCards) {
-            return asyncReduce(edhrecCards.map(e => fetchAndReturn(e, 1)), a => a.join('\n\n'));
+            return asyncReduce(edhrecCards.map((e) => __awaiter(this, void 0, void 0, function* () { return fetchAndReturn(e, 1); })), a => a.join('\n\n'));
         }
         const gathererCards = message.match(gathererRegex);
         if (gathererCards) {
-            return asyncReduce(gathererCards.map(e => fetchAndReturn(e, 2)), a => a.join('\n\n'));
+            return asyncReduce(gathererCards.map((e) => __awaiter(this, void 0, void 0, function* () { return fetchAndReturn(e, 2); })), a => a.join('\n\n'));
         }
         const legalityCards = message.match(legalityRegex);
         if (legalityCards) {
-            return asyncReduce(legalityCards.map(e => fetchAndReturn(e, 3)), a => a.join('\n\n'));
+            return asyncReduce(legalityCards.map((e) => __awaiter(this, void 0, void 0, function* () { return fetchAndReturn(e, 3); })), a => a.join('\n\n'));
         }
         const pricingCards = message.match(pricingRegex);
         if (pricingCards) {
-            return asyncReduce(pricingCards.map(e => fetchAndReturn(e, 4)), a => a.join('\n\n'));
+            return asyncReduce(pricingCards.map((e) => __awaiter(this, void 0, void 0, function* () { return fetchAndReturn(e, 4); })), a => a.join('\n\n'));
         }
         return '';
     });

@@ -8,11 +8,12 @@
     "project": "./tsconfig.json"
   },
   "rules": {
-    "indent": ["error", 2],
+    "indent": "off",
+    "@typescript-eslint/indent": ["error", 2],
     "eslint-comments/no-use": "off",
     "import/no-namespace": "off",
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-unused-vars": ["error", {"argsIgnorePattern": "^_"}],
     "@typescript-eslint/explicit-member-accessibility": [
       "error",
       {"accessibility": "no-public"}
@@ -51,7 +52,8 @@
     "semi": "off",
     "@typescript-eslint/semi": ["error", "never"],
     "@typescript-eslint/type-annotation-spacing": "error",
-    "@typescript-eslint/unbound-method": "error"
+    "@typescript-eslint/unbound-method": "error",
+    "github/array-foreach": "off" // Because it's wrong with forEach((item, index) => ...)
   },
   "env": {
     "node": true,

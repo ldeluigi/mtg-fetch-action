@@ -5,11 +5,11 @@ import distance from 'jaro-winkler'
 const scryfallEndpoint = 'https://api.scryfall.com/cards/search?q='
 const edhrecRegex = new RegExp(/(?<=\{\{)(.*?)(?=\}\})/g)
 const gathererRegex = new RegExp(/(?<=\[\[)(.*?)(?=\]\])/g)
-const legalityRegex = new RegExp(/(?<=\<\<)(.*?)(?=\>\>)/g)
+const legalityRegex = new RegExp(/(?<=<<)(.*?)(?=>>)/g)
 const pricingRegex = new RegExp(/(?<=\(\()(.*?)(?=\)\))/g)
 
 function sendPricingInfo(card: ScryfallCardObject): string {
-  let data = {
+  const data = {
     title: `${card.name} - TCGPlayer pricing`,
     url: card.purchase_uris.tcgplayer,
     image: {
@@ -20,14 +20,14 @@ function sendPricingInfo(card: ScryfallCardObject): string {
 }
 
 function sendLegalityInfo(card: ScryfallCardObject): string {
-  let legaityString: string = ''
+  let legaityString = ''
 
-  Object.entries(card.legalities).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(card.legalities)) {
     const legal = value.replace(new RegExp('_', 'g'), ' ')
     legaityString += `${key}: ${legal}\n`
-  })
+  }
 
-  let data = {
+  const data = {
     title: `${card.name} - Legalities`,
     description: legaityString
   }
@@ -119,7 +119,7 @@ export async function searchForCards(message: string): Promise<string> {
   const edhrecCards = message.match(edhrecRegex)
   if (edhrecCards) {
     return asyncReduce(
-      edhrecCards.map(e => fetchAndReturn(e, 1)),
+      edhrecCards.map(async e => fetchAndReturn(e, 1)),
       a => a.join('\n\n')
     )
   }
@@ -127,7 +127,7 @@ export async function searchForCards(message: string): Promise<string> {
   const gathererCards = message.match(gathererRegex)
   if (gathererCards) {
     return asyncReduce(
-      gathererCards.map(e => fetchAndReturn(e, 2)),
+      gathererCards.map(async e => fetchAndReturn(e, 2)),
       a => a.join('\n\n')
     )
   }
@@ -135,7 +135,7 @@ export async function searchForCards(message: string): Promise<string> {
   const legalityCards = message.match(legalityRegex)
   if (legalityCards) {
     return asyncReduce(
-      legalityCards.map(e => fetchAndReturn(e, 3)),
+      legalityCards.map(async e => fetchAndReturn(e, 3)),
       a => a.join('\n\n')
     )
   }
@@ -143,7 +143,7 @@ export async function searchForCards(message: string): Promise<string> {
   const pricingCards = message.match(pricingRegex)
   if (pricingCards) {
     return asyncReduce(
-      pricingCards.map(e => fetchAndReturn(e, 4)),
+      pricingCards.map(async e => fetchAndReturn(e, 4)),
       a => a.join('\n\n')
     )
   }
@@ -152,7 +152,7 @@ export async function searchForCards(message: string): Promise<string> {
 
 async function asyncReduce<T, R>(
   a: Promise<T>[],
-  agg: (a: T[]) => R
+  agg: (_: T[]) => R
 ): Promise<R> {
   const res = await Promise.all(a)
   return agg(res)
