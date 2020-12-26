@@ -36,7 +36,7 @@ function sendPricingInfo(card) {
             url: card.image_uris.png
         }
     };
-    return `### ${data.title}\n[${card.name}](${data.image.url})\n[Buy on TCGPlayer](${data.url})`;
+    return `### ${data.title}\n![${card.name}](${data.image.url})\n[Buy on TCGPlayer](${data.url})`;
 }
 function sendLegalityInfo(card) {
     let legaityString = '';
@@ -58,7 +58,7 @@ function sendGathererInfo(card) {
             url: card.image_uris.png
         }
     };
-    return `### [${data.title}](${data.url})\n[${card.name}](${data.image.url})`;
+    return `### [${data.title}](${data.url})\n![${card.name}](${data.image.url})`;
 }
 function sendEdhrecInfo(card) {
     const data = {
@@ -68,7 +68,7 @@ function sendEdhrecInfo(card) {
             url: card.image_uris.png
         }
     };
-    return `### [${data.title}](${data.url})\n[${card.name}](${data.image.url})`;
+    return `### [${data.title}](${data.url})\n![${card.name}](${data.image.url})`;
 }
 function pickBest(cardName, cardList) {
     let max = Number.NEGATIVE_INFINITY;
