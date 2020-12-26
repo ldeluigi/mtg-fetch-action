@@ -16,7 +16,7 @@ function sendPricingInfo(card: ScryfallCardObject): string {
       url: card.image_uris.png
     }
   }
-  return `### ${data.title}\n[${card.name}](${data.image.url})\n[Buy on TCGPlayer](${data.url})`
+  return `### ${data.title}\n![${card.name}](${data.image.url})\n[Buy on TCGPlayer](${data.url})`
 }
 
 function sendLegalityInfo(card: ScryfallCardObject): string {
@@ -43,7 +43,7 @@ function sendGathererInfo(card: ScryfallCardObject): string {
     }
   }
 
-  return `### [${data.title}](${data.url})\n[${card.name}](${data.image.url})`
+  return `### [${data.title}](${data.url})\n![${card.name}](${data.image.url})`
 }
 
 function sendEdhrecInfo(card: ScryfallCardObject): string {
@@ -55,7 +55,7 @@ function sendEdhrecInfo(card: ScryfallCardObject): string {
     }
   }
 
-  return `### [${data.title}](${data.url})\n[${card.name}](${data.image.url})`
+  return `### [${data.title}](${data.url})\n![${card.name}](${data.image.url})`
 }
 
 function pickBest(
