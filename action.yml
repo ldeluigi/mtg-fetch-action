@@ -1,11 +1,10 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: "Mtg Fetch Action"
+description: "This Action answer to issues, comments and pull requests fetching Magic the Gathering cards preview."
+author: "Luca Deluigi"
 inputs:
-  milliseconds: # change this
+  body:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: "The body of the issue, pull request or comment to handle"
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"
