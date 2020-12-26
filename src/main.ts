@@ -9,7 +9,9 @@ async function run(): Promise<void> {
     if (
       !['issues', 'issue_comment', 'pull_request'].includes(context.eventName)
     ) {
-      core.warning(`Event name is not in issues, issue_comment, pull_request!`)
+      core.warning(
+        `Event name is not in [issues, issue_comment, pull_request]!`
+      )
       return
     }
 
@@ -76,12 +78,14 @@ async function run(): Promise<void> {
         const answer: string = await (body.startsWith('Mtg Fetcher Help')
           ? bot.printHelp()
           : bot.searchForCards(body))
-        await githubClient.issues.createComment({
-          issue_number: context.issue.number,
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          body: answer
-        })
+        if (answer.length > 0) {
+          await githubClient.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: answer
+          })
+        }
         await (context.eventName === 'pull_request'
           ? githubClient.reactions.deleteForIssue({
               reaction_id: reactionRes.data.id,

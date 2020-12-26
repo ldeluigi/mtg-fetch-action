@@ -195,7 +195,7 @@ function run() {
         try {
             const githubToken = core.getInput('github-token', { required: true });
             if (!['issues', 'issue_comment', 'pull_request'].includes(github_1.context.eventName)) {
-                core.warning(`Event name is not in issues, issue_comment, pull_request!`);
+                core.warning(`Event name is not in [issues, issue_comment, pull_request]!`);
                 return;
             }
             const githubClient = github_1.getOctokit(githubToken);
@@ -252,12 +252,14 @@ function run() {
                     const answer = yield (body.startsWith('Mtg Fetcher Help')
                         ? bot.printHelp()
                         : bot.searchForCards(body));
-                    yield githubClient.issues.createComment({
-                        issue_number: github_1.context.issue.number,
-                        owner: github_1.context.repo.owner,
-                        repo: github_1.context.repo.repo,
-                        body: answer
-                    });
+                    if (answer.length > 0) {
+                        yield githubClient.issues.createComment({
+                            issue_number: github_1.context.issue.number,
+                            owner: github_1.context.repo.owner,
+                            repo: github_1.context.repo.repo,
+                            body: answer
+                        });
+                    }
                     yield (github_1.context.eventName === 'pull_request'
                         ? githubClient.reactions.deleteForIssue({
                             reaction_id: reactionRes.data.id,
