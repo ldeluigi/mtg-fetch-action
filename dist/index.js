@@ -36,7 +36,7 @@ function sendPricingInfo(card) {
             url: card.image_uris.png
         }
     };
-    return `### [${data.title}](${data.url})\n<img src="${data.image.url}" alt="${card.name}" width="200"/>`;
+    return `### [${data.title}](${data.url})\n<img src="${data.image.url}" alt="${card.name}" width="300"/>`;
 }
 function sendLegalityInfo(card) {
     let legaityString = '';
@@ -58,7 +58,7 @@ function sendGathererInfo(card) {
             url: card.image_uris.png
         }
     };
-    return `### [${data.title}](${data.url})\n<img src="${data.image.url}" alt="${card.name}" width="200"/>`;
+    return `### [${data.title}](${data.url})\n<img src="${data.image.url}" alt="${card.name}" width="300"/>`;
 }
 function sendEdhrecInfo(card) {
     const data = {
@@ -68,7 +68,7 @@ function sendEdhrecInfo(card) {
             url: card.image_uris.png
         }
     };
-    return `### [${data.title}](${data.url})\n<img src="${data.image.url}" alt="${card.name}" width="200"/>`;
+    return `### [${data.title}](${data.url})\n<img src="${data.image.url}" alt="${card.name}" width="300"/>`;
 }
 function pickBest(cardName, cardList) {
     let max = Number.NEGATIVE_INFINITY;
