@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 import {ScryfallCardObject} from './scryfall-interface'
-const distance = require('jaro-winkler')
+import distance from 'jaro-winkler'
 
 const scryfallEndpoint = 'https://api.scryfall.com/cards/search?q='
 const edhrecRegex = new RegExp(/(?<=\{\{)(.*?)(?=\}\})/g)
