@@ -47,7 +47,7 @@ function sendCardInfo(card: ScryfallCardObject): string {
     }
   }
 
-  return `### [${data.title}](${data.image.url})\n#### [(Gatherer)](${data.url.gatherer}) [(Scryfall)](${data.url.scryfall}) [(EDHREC)](${data.url.edhrec})`
+  return `**[${data.title}](${data.image.url})** - [(Gatherer)](${data.url.gatherer}) [(Scryfall)](${data.url.scryfall}) [(EDHREC)](${data.url.edhrec})`
 }
 
 function sendCardImageInfo(card: ScryfallCardObject): string {
@@ -63,7 +63,7 @@ function sendCardImageInfo(card: ScryfallCardObject): string {
     }
   }
 
-  return `### ${data.title}\n#### [(Gatherer)](${data.url.gatherer}) [(Scryfall)](${data.url.scryfall}) [(EDHREC)](${data.url.edhrec})\n<img src="${data.image.url}" alt="${card.name}" width="300"/>`
+  return `## ${data.title}\n<img src="${data.image.url}" alt="${card.name}" width="300"/>\n\n### [(Gatherer)](${data.url.gatherer}) [(Scryfall)](${data.url.scryfall}) [(EDHREC)](${data.url.edhrec})`
 }
 
 function pickBest(
