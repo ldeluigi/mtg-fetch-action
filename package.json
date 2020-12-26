@@ -46,6 +46,6 @@
     "node-fetch": "~2.6.1",
     "prettier": "~2.1.1",
     "ts-jest": "~24.3.0",
-    "typescript": "~4.0.2"
+    "typescript": "~4.1.3"
   }
 }
