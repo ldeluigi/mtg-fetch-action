@@ -1,6 +1,6 @@
 # Mtg Card Fetch Bot
 
-This action/workflow replies to issues and pull requests and their comments with smart links to Magic the Gathering websites. Uses the standard `[[<card-name>]]` syntax plus other syntax that enable features.
+This action/workflow replies to issues, pull requests and their respective comments with smart links to Magic the Gathering resources. Uses the standard `[[<card-name>]]` for the default output or some other syntax that enable special features like image previews, card prices or legality info.
 
 **Current Build:** ![build-test](https://github.com/ldeluigi/mtg-fetch-action/workflows/build-test/badge.svg?branch=master)
 
@@ -37,3 +37,12 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+## Quick reference
+
+- `[[cardname]]` returns card information from gatherer and other websites in the chat.
+- `{{cardname}}` returns card information from gatherer, and also puts the card image in the chat.
+- `::cardname::` returns card format legality information.
+- `((cardname))` returns card pricing from TCGPlayer, and also puts the card image in the chat.
+
+If you desire a specific set image, insert `e:SET` inside the brackets and after the card name, using the 3 letter set code instead of the word SET. Other syntax rules can be found at https://scryfall.com/docs/syntax.
