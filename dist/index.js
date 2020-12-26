@@ -26,7 +26,7 @@ const jaro_winkler_1 = __importDefault(__webpack_require__(221));
 const scryfallEndpoint = 'https://api.scryfall.com/cards/search?q=';
 const edhrecRegex = new RegExp(/(?<=\{\{)(.*?)(?=\}\})/g);
 const gathererRegex = new RegExp(/(?<=\[\[)(.*?)(?=\]\])/g);
-const legalityRegex = new RegExp(/(?<=<<)(.*?)(?=>>)/g);
+const legalityRegex = new RegExp(/(?<=::)(.*?)(?=::)/g);
 const pricingRegex = new RegExp(/(?<=\(\()(.*?)(?=\)\))/g);
 function sendPricingInfo(card) {
     const data = {
@@ -113,7 +113,7 @@ function printHelp() {
         'in the chat.\n\n' +
         '`{{cardname}}` returns card information from EDHREC, and also puts the card image in' +
         ' the chat.\n\n' +
-        '`<<cardname>>` returns card format legality information.\n\n' +
+        '`::cardname::` returns card format legality information.\n\n' +
         '`((cardname))` returns card pricing from TCGPlayer, and also puts the card image in' +
         ' the chat.\n\n' +
         'If you desire a specific set image, insert e:SET inside the brackets and after the' +
@@ -249,7 +249,8 @@ function run() {
                         throw new Error('Malformed response: response.data.id not found.');
                     }
                     // Add answer with result
-                    const answer = yield (body.startsWith('Mtg Fetcher Help')
+                    const answer = yield (body.startsWith('Mtg Fetcher Help') ||
+                        body.startsWith('!mtg help')
                         ? bot.printHelp()
                         : bot.searchForCards(body));
                     if (answer.length > 0) {

@@ -5,7 +5,7 @@ import distance from 'jaro-winkler'
 const scryfallEndpoint = 'https://api.scryfall.com/cards/search?q='
 const edhrecRegex = new RegExp(/(?<=\{\{)(.*?)(?=\}\})/g)
 const gathererRegex = new RegExp(/(?<=\[\[)(.*?)(?=\]\])/g)
-const legalityRegex = new RegExp(/(?<=<<)(.*?)(?=>>)/g)
+const legalityRegex = new RegExp(/(?<=::)(.*?)(?=::)/g)
 const pricingRegex = new RegExp(/(?<=\(\()(.*?)(?=\)\))/g)
 
 function sendPricingInfo(card: ScryfallCardObject): string {
@@ -106,7 +106,7 @@ export function printHelp(): string {
     'in the chat.\n\n' +
     '`{{cardname}}` returns card information from EDHREC, and also puts the card image in' +
     ' the chat.\n\n' +
-    '`<<cardname>>` returns card format legality information.\n\n' +
+    '`::cardname::` returns card format legality information.\n\n' +
     '`((cardname))` returns card pricing from TCGPlayer, and also puts the card image in' +
     ' the chat.\n\n' +
     'If you desire a specific set image, insert e:SET inside the brackets and after the' +
