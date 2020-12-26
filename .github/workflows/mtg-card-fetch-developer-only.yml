@@ -1,0 +1,21 @@
+name: Mtg Card Fetch DEV Bot
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened]
+  pull_request_review:
+    type: [submitted]
+
+jobs:
+  fetch-card-references:
+    name: Fetch MTG Card
+    runs-on: ubuntu-latest
+    steps:
+      -uses: actions/checkout@v2
+      - uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
