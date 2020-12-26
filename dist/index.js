@@ -24,7 +24,7 @@ exports.searchForCards = exports.printHelp = void 0;
 const node_fetch_1 = __importDefault(__webpack_require__(467));
 const jaro_winkler_1 = __importDefault(__webpack_require__(221));
 const scryfallEndpoint = 'https://api.scryfall.com/cards/search?q=';
-const edhrecRegex = new RegExp(/(?<=\{\{)(.*?)(?=\}\})/g);
+const imageRegex = new RegExp(/(?<=\{\{)(.*?)(?=\}\})/g);
 const gathererRegex = new RegExp(/(?<=\[\[)(.*?)(?=\]\])/g);
 const legalityRegex = new RegExp(/(?<=::)(.*?)(?=::)/g);
 const pricingRegex = new RegExp(/(?<=\(\()(.*?)(?=\)\))/g);
@@ -50,25 +50,33 @@ function sendLegalityInfo(card) {
     };
     return `### ${data.title}\n${data.description}`;
 }
-function sendGathererInfo(card) {
+function sendCardInfo(card) {
     const data = {
-        title: `${card.name} - Gatherer Page`,
-        url: card.related_uris.gatherer,
+        title: `${card.name}`,
+        url: {
+            gatherer: card.related_uris.gatherer,
+            scryfall: card.scryfall_uri,
+            edhrec: card.related_uris.edhrec
+        },
         image: {
             url: card.image_uris.png
         }
     };
-    return `### [${data.title}](${data.url})\n<img src="${data.image.url}" alt="${card.name}" width="300"/>`;
+    return `### [${data.title}](${data.image.url})\n#### [(Gatherer)](${data.url.gatherer}) [(Scryfall)](${data.url.scryfall}) [(EDHREC)](${data.url.edhrec})`;
 }
-function sendEdhrecInfo(card) {
+function sendCardImageInfo(card) {
     const data = {
-        title: `${card.name} - EDHREC Page`,
-        url: card.related_uris.edhrec,
+        title: `${card.name}`,
+        url: {
+            gatherer: card.related_uris.gatherer,
+            scryfall: card.scryfall_uri,
+            edhrec: card.related_uris.edhrec
+        },
         image: {
             url: card.image_uris.png
         }
     };
-    return `### [${data.title}](${data.url})\n<img src="${data.image.url}" alt="${card.name}" width="300"/>`;
+    return `### ${data.title}\n#### [(Gatherer)](${data.url.gatherer}) [(Scryfall)](${data.url.scryfall}) [(EDHREC)](${data.url.edhrec})\n<img src="${data.image.url}" alt="${card.name}" width="300"/>`;
 }
 function pickBest(cardName, cardList) {
     let max = Number.NEGATIVE_INFINITY;
@@ -92,9 +100,9 @@ function fetchAndReturn(card, mode) {
             const cardToSend = pickBest(card, cardList);
             switch (mode) {
                 case 1:
-                    return sendEdhrecInfo(cardToSend);
+                    return sendCardImageInfo(cardToSend);
                 case 2:
-                    return sendGathererInfo(cardToSend);
+                    return sendCardInfo(cardToSend);
                 case 3:
                     return sendLegalityInfo(cardToSend);
                 case 4:
@@ -109,13 +117,10 @@ function fetchAndReturn(card, mode) {
 }
 function printHelp() {
     return ('These are the following commands I can perform:\n\n' +
-        '`[[cardname]]` returns card information from gatherer, and also puts the card image ' +
-        'in the chat.\n\n' +
-        '`{{cardname}}` returns card information from EDHREC, and also puts the card image in' +
-        ' the chat.\n\n' +
+        '`[[cardname]]` returns card information from gatherer and other websites in the chat.\n\n' +
+        '`{{cardname}}` returns card information from gatherer, and also puts the card image in the chat.\n\n' +
         '`::cardname::` returns card format legality information.\n\n' +
-        '`((cardname))` returns card pricing from TCGPlayer, and also puts the card image in' +
-        ' the chat.\n\n' +
+        '`((cardname))` returns card pricing from TCGPlayer, and also puts the card image in the chat.\n\n' +
         'If you desire a specific set image, insert e:SET inside the brackets and after the' +
         ' card name, using the 3 letter set code instead of the word SET. Other syntax rules' +
         ' can be found at https://scryfall.com/docs/syntax.');
@@ -123,9 +128,9 @@ function printHelp() {
 exports.printHelp = printHelp;
 function searchForCards(message) {
     return __awaiter(this, void 0, void 0, function* () {
-        const edhrecCards = message.match(edhrecRegex);
-        if (edhrecCards) {
-            return asyncReduce(edhrecCards.map((e) => __awaiter(this, void 0, void 0, function* () { return fetchAndReturn(e, 1); })), a => a.join('\n\n'));
+        const imageCards = message.match(imageRegex);
+        if (imageCards) {
+            return asyncReduce(imageCards.map((e) => __awaiter(this, void 0, void 0, function* () { return fetchAndReturn(e, 1); })), a => a.join('\n\n'));
         }
         const gathererCards = message.match(gathererRegex);
         if (gathererCards) {
