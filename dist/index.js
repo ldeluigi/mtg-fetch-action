@@ -223,37 +223,59 @@ function run() {
             if (body.length > 0) {
                 try {
                     // Add :eyes: reaction
-                    const reactionRes = yield (github_1.context.eventName === 'pull_request'
-                        ? githubClient.reactions.createForIssue({
-                            issue_number: github_1.context.issue.number,
-                            content: 'eyes',
-                            owner: github_1.context.repo.owner,
-                            repo: github_1.context.repo.repo
-                        })
-                        : github_1.context.eventName === 'issue_comment'
-                            ? githubClient.reactions.createForIssueComment({
-                                comment_id: github_1.context.payload.comment.id,
-                                content: 'eyes',
-                                owner: github_1.context.repo.owner,
-                                repo: github_1.context.repo.repo
-                            })
-                            : github_1.context.eventName === 'issues'
-                                ? githubClient.reactions.createForIssue({
-                                    issue_number: github_1.context.issue.number,
-                                    content: 'eyes',
-                                    owner: github_1.context.repo.owner,
-                                    repo: github_1.context.repo.repo
-                                })
-                                : Promise.resolve(null));
-                    if (!(reactionRes === null || reactionRes === void 0 ? void 0 : reactionRes.data.id)) {
-                        throw new Error('Malformed response: response.data.id not found.');
-                    }
+                    // const reactionRes = await (context.eventName === 'pull_request'
+                    //   ? githubClient.reactions.createForIssue({
+                    //       issue_number: context.issue.number, // (context.payload as any).pull_request.number,
+                    //       content: 'eyes',
+                    //       owner: context.repo.owner,
+                    //       repo: context.repo.repo
+                    //     })
+                    //   : context.eventName === 'issue_comment'
+                    //   ? githubClient.reactions.createForIssueComment({
+                    //       comment_id: (context.payload as any).comment.id,
+                    //       content: 'eyes',
+                    //       owner: context.repo.owner,
+                    //       repo: context.repo.repo
+                    //     })
+                    //   : context.eventName === 'issues'
+                    //   ? githubClient.reactions.createForIssue({
+                    //       issue_number: context.issue.number,
+                    //       content: 'eyes',
+                    //       owner: context.repo.owner,
+                    //       repo: context.repo.repo
+                    //     })
+                    //   : Promise.resolve(null))
+                    // if (!reactionRes?.data.id) {
+                    //   throw new Error('Malformed response: response.data.id not found.')
+                    // }
                     // Add answer with result
                     const answer = yield (body.startsWith('Mtg Fetcher Help') ||
                         body.startsWith('!mtg help')
                         ? bot.printHelp()
                         : bot.searchForCards(body));
                     if (answer.length > 0) {
+                        yield (github_1.context.eventName === 'pull_request'
+                            ? githubClient.reactions.createForIssue({
+                                issue_number: github_1.context.issue.number,
+                                content: '+1',
+                                owner: github_1.context.repo.owner,
+                                repo: github_1.context.repo.repo
+                            })
+                            : github_1.context.eventName === 'issue_comment'
+                                ? githubClient.reactions.createForIssueComment({
+                                    comment_id: github_1.context.payload.comment.id,
+                                    content: '+1',
+                                    owner: github_1.context.repo.owner,
+                                    repo: github_1.context.repo.repo
+                                })
+                                : github_1.context.eventName === 'issues'
+                                    ? githubClient.reactions.createForIssue({
+                                        issue_number: github_1.context.issue.number,
+                                        content: '+1',
+                                        owner: github_1.context.repo.owner,
+                                        repo: github_1.context.repo.repo
+                                    })
+                                    : Promise.resolve(null));
                         yield githubClient.issues.createComment({
                             issue_number: github_1.context.issue.number,
                             owner: github_1.context.repo.owner,
@@ -261,28 +283,28 @@ function run() {
                             body: answer
                         });
                     }
-                    yield (github_1.context.eventName === 'pull_request'
-                        ? githubClient.reactions.deleteForIssue({
-                            reaction_id: reactionRes.data.id,
-                            issue_number: github_1.context.issue.number,
-                            owner: github_1.context.repo.owner,
-                            repo: github_1.context.repo.repo
-                        })
-                        : github_1.context.eventName === 'issue_comment'
-                            ? githubClient.reactions.deleteForIssueComment({
-                                reaction_id: reactionRes.data.id,
-                                comment_id: github_1.context.payload.comment.id,
-                                owner: github_1.context.repo.owner,
-                                repo: github_1.context.repo.repo
-                            })
-                            : github_1.context.eventName === 'issues'
-                                ? githubClient.reactions.deleteForIssue({
-                                    reaction_id: reactionRes.data.id,
-                                    issue_number: github_1.context.issue.number,
-                                    owner: github_1.context.repo.owner,
-                                    repo: github_1.context.repo.repo
-                                })
-                                : Promise.resolve(null));
+                    // await (context.eventName === 'pull_request'
+                    //   ? githubClient.reactions.deleteForIssue({
+                    //       reaction_id: reactionRes.data.id,
+                    //       issue_number: context.issue.number,
+                    //       owner: context.repo.owner,
+                    //       repo: context.repo.repo
+                    //     })
+                    //   : context.eventName === 'issue_comment'
+                    //   ? githubClient.reactions.deleteForIssueComment({
+                    //       reaction_id: reactionRes.data.id,
+                    //       comment_id: (context.payload as any).comment.id,
+                    //       owner: context.repo.owner,
+                    //       repo: context.repo.repo
+                    //     })
+                    //   : context.eventName === 'issues'
+                    //   ? githubClient.reactions.deleteForIssue({
+                    //       reaction_id: reactionRes.data.id,
+                    //       issue_number: context.issue.number,
+                    //       owner: context.repo.owner,
+                    //       repo: context.repo.repo
+                    //     })
+                    //   : Promise.resolve(null))
                 }
                 catch (error) {
                     core.setFailed(error.message);

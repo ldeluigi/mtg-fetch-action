@@ -48,31 +48,31 @@ async function run(): Promise<void> {
     if (body.length > 0) {
       try {
         // Add :eyes: reaction
-        const reactionRes = await (context.eventName === 'pull_request'
-          ? githubClient.reactions.createForIssue({
-              issue_number: context.issue.number, // (context.payload as any).pull_request.number,
-              content: 'eyes',
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            })
-          : context.eventName === 'issue_comment'
-          ? githubClient.reactions.createForIssueComment({
-              comment_id: (context.payload as any).comment.id,
-              content: 'eyes',
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            })
-          : context.eventName === 'issues'
-          ? githubClient.reactions.createForIssue({
-              issue_number: context.issue.number,
-              content: 'eyes',
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            })
-          : Promise.resolve(null))
-        if (!reactionRes?.data.id) {
-          throw new Error('Malformed response: response.data.id not found.')
-        }
+        // const reactionRes = await (context.eventName === 'pull_request'
+        //   ? githubClient.reactions.createForIssue({
+        //       issue_number: context.issue.number, // (context.payload as any).pull_request.number,
+        //       content: 'eyes',
+        //       owner: context.repo.owner,
+        //       repo: context.repo.repo
+        //     })
+        //   : context.eventName === 'issue_comment'
+        //   ? githubClient.reactions.createForIssueComment({
+        //       comment_id: (context.payload as any).comment.id,
+        //       content: 'eyes',
+        //       owner: context.repo.owner,
+        //       repo: context.repo.repo
+        //     })
+        //   : context.eventName === 'issues'
+        //   ? githubClient.reactions.createForIssue({
+        //       issue_number: context.issue.number,
+        //       content: 'eyes',
+        //       owner: context.repo.owner,
+        //       repo: context.repo.repo
+        //     })
+        //   : Promise.resolve(null))
+        // if (!reactionRes?.data.id) {
+        //   throw new Error('Malformed response: response.data.id not found.')
+        // }
 
         // Add answer with result
         const answer: string = await (body.startsWith('Mtg Fetcher Help') ||
@@ -80,6 +80,28 @@ async function run(): Promise<void> {
           ? bot.printHelp()
           : bot.searchForCards(body))
         if (answer.length > 0) {
+          await (context.eventName === 'pull_request'
+            ? githubClient.reactions.createForIssue({
+                issue_number: context.issue.number, // (context.payload as any).pull_request.number,
+                content: '+1',
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              })
+            : context.eventName === 'issue_comment'
+            ? githubClient.reactions.createForIssueComment({
+                comment_id: (context.payload as any).comment.id,
+                content: '+1',
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              })
+            : context.eventName === 'issues'
+            ? githubClient.reactions.createForIssue({
+                issue_number: context.issue.number,
+                content: '+1',
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              })
+            : Promise.resolve(null))
           await githubClient.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
@@ -87,28 +109,28 @@ async function run(): Promise<void> {
             body: answer
           })
         }
-        await (context.eventName === 'pull_request'
-          ? githubClient.reactions.deleteForIssue({
-              reaction_id: reactionRes.data.id,
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            })
-          : context.eventName === 'issue_comment'
-          ? githubClient.reactions.deleteForIssueComment({
-              reaction_id: reactionRes.data.id,
-              comment_id: (context.payload as any).comment.id,
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            })
-          : context.eventName === 'issues'
-          ? githubClient.reactions.deleteForIssue({
-              reaction_id: reactionRes.data.id,
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            })
-          : Promise.resolve(null))
+        // await (context.eventName === 'pull_request'
+        //   ? githubClient.reactions.deleteForIssue({
+        //       reaction_id: reactionRes.data.id,
+        //       issue_number: context.issue.number,
+        //       owner: context.repo.owner,
+        //       repo: context.repo.repo
+        //     })
+        //   : context.eventName === 'issue_comment'
+        //   ? githubClient.reactions.deleteForIssueComment({
+        //       reaction_id: reactionRes.data.id,
+        //       comment_id: (context.payload as any).comment.id,
+        //       owner: context.repo.owner,
+        //       repo: context.repo.repo
+        //     })
+        //   : context.eventName === 'issues'
+        //   ? githubClient.reactions.deleteForIssue({
+        //       reaction_id: reactionRes.data.id,
+        //       issue_number: context.issue.number,
+        //       owner: context.repo.owner,
+        //       repo: context.repo.repo
+        //     })
+        //   : Promise.resolve(null))
       } catch (error) {
         core.setFailed(error.message)
       }
