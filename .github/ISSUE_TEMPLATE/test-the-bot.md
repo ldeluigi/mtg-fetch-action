@@ -7,4 +7,4 @@ assignees: ''
 
 ---
 
-Mtg Fetcher Help
+Mtg Fetch Help
