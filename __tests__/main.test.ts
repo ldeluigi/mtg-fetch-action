@@ -10,11 +10,11 @@ test('Test for a card in gatherer', async () => {
 
 // shows how the runner will run a javascript action with env / stdout protocol
 test('test runs', () => {
-  process.env['INPUT_BODY'] = '[[Aluren]]'
+  process.env['INPUT_GITHUB-TOKEN'] = 'token'
   const np = process.execPath
   const ip = path.join(__dirname, '..', 'lib', 'main.js')
   const options: cp.ExecFileSyncOptions = {
     env: process.env
   }
-  console.log(cp.execFileSync(np, [ip], options).toString())
+  cp.execFileSync(np, [ip], options)
 })
