@@ -1,6 +1,9 @@
 name: "Mtg Fetch Action"
 description: "This Action answer to issues, comments and pull requests fetching Magic the Gathering cards preview."
 author: "Luca Deluigi"
+branding:
+  icon: 'star'  
+  color: 'purple'
 inputs:
   github-token:
     required: true
