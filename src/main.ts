@@ -75,7 +75,7 @@ async function run(): Promise<void> {
         // }
 
         // Add answer with result
-        const answer: string = await (body.startsWith('Mtg Fetcher Help') ||
+        const answer: string = await (body.startsWith('Mtg Fetch Help') ||
         body.startsWith('!mtg help')
           ? bot.printHelp()
           : bot.searchForCards(body))

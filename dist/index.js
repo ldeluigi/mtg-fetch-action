@@ -249,7 +249,7 @@ function run() {
                     //   throw new Error('Malformed response: response.data.id not found.')
                     // }
                     // Add answer with result
-                    const answer = yield (body.startsWith('Mtg Fetcher Help') ||
+                    const answer = yield (body.startsWith('Mtg Fetch Help') ||
                         body.startsWith('!mtg help')
                         ? bot.printHelp()
                         : bot.searchForCards(body));
