@@ -1,6 +1,6 @@
 # Mtg Card Fetch Bot
 
-**Current Build:** ![build-test](https://github.com/ldeluigi/mtg-fetch-action/workflows/build-test/badge.svg)
+**Current Build:** ![build-test](https://github.com/ldeluigi/mtg-fetch-action/workflows/build-test/badge.svg?branch=master)
 
 ## Usage
 
