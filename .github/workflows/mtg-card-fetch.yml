@@ -9,33 +9,13 @@ on:
     types: [opened]
   pull_request_review:
     type: [submitted]
-  
+
 jobs:
   fetch-card-references:
-    if: always()
     name: Fetch MTG Card
     runs-on: ubuntu-latest
     steps:
-      - if: ${{ github.event_name == 'issues' }}
-        env:
-          BODY: ${{ github.event.issue.body }}
-        run: |
-          echo $BODY
-      
-      - if: ${{ github.event_name == 'issue_comment' }}
-        env:
-          BODY: ${{ github.event.comment.body }}
-        run: |
-          echo $BODY
-      
-      - if: ${{ github.event_name == 'pull_request' }}
-        env:
-          BODY: ${{ github.event.pull_request.body }}
-        run: |
-          echo $BODY
-        
-      - if: ${{ github.event_name == 'pull_request_review' }}
-        env:
-          BODY: ${{ github.event.review.body }}
-        run: |
-          echo $BODY
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
