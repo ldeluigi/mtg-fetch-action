@@ -36,7 +36,7 @@ function sendPricingInfo(card) {
             url: card.image_uris.png
         }
     };
-    return `### ${data.title}\n![${card.name}](${data.image.url})\n[Buy on TCGPlayer](${data.url})`;
+    return `### [${data.title}](${data.url})\n![${card.name}](${data.image.url})`;
 }
 function sendLegalityInfo(card) {
     let legaityString = '';
