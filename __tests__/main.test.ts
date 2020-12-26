@@ -3,10 +3,14 @@ import * as cp from 'child_process'
 import * as path from 'path'
 import * as bot from '../src/bot-utils'
 
-test('Test for a card in gatherer', async () => {
-  let res = await bot.searchForCards('[[Aluren]]')
-  expect(res.length).toBeGreaterThan(1)
-})
+test(
+  'Test for a card in gatherer',
+  async () => {
+    let res = await bot.searchForCards('[[Aluren]]')
+    expect(res.length).toBeGreaterThan(1)
+  },
+  30 * 1000
+)
 
 // shows how the runner will run a javascript action with env / stdout protocol
 test('test runs', () => {
