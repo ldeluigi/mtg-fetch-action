@@ -60,11 +60,11 @@ function sendCardInfo(card: ScryfallCardObject): string {
 
   return `**[${data.title}](${data.image.url})** - [(Gatherer)](${
     data.url.gatherer
-  }) [(Scryfall)](${data.url.scryfall}) [(EDHREC)](${data.url.edhrec})\n
-    ${data.info
-      .filter(i => i !== undefined && i !== null)
-      .map(i => `> ${i}`)
-      .join('\n')}`
+  }) [(Scryfall)](${data.url.scryfall}) [(EDHREC)](${
+    data.url.edhrec
+  })\n${data.info
+    .map(i => (i ? `> ${i.replace('\n', '\n> ')}` : ''))
+    .join('\n')}`
 }
 
 function sendCardImageInfo(card: ScryfallCardObject): string {
