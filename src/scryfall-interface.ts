@@ -88,6 +88,7 @@ export interface ScryfallCardFaceObject {
   power?: string
   toughness?: string
   type_line: string
+  loyalty?: string
   image_uris?: {
     small: string
     normal: string

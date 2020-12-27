@@ -1,6 +1,6 @@
 {
   "name": "mtg-fetch-action",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "private": true,
   "description": "Fetches MTG Cards from Scryfall and posts previews.",
   "main": "lib/main.js",

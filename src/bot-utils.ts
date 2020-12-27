@@ -41,6 +41,7 @@ function sendCardInfo(card: ScryfallCardObject): string {
     c.mana_cost,
     c.type_line,
     c.power && c.toughness ? `${c.power}/${c.toughness}` : undefined,
+    c.loyalty ? `${c.loyalty}` : undefined,
     c.oracle_text
   ]
   const data = {
