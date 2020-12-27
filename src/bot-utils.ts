@@ -63,7 +63,8 @@ function sendCardInfo(card: ScryfallCardObject): string {
   }) [(Scryfall)](${data.url.scryfall}) [(EDHREC)](${
     data.url.edhrec
   })\n${data.info
-    .map(i => (i ? `> ${i.replace('\n', '\n> ')}` : ''))
+    .filter(i => i)
+    .map(i => `> ${i?.replace('\n', '\n> ')}`)
     .join('\n')}`
 }
 
