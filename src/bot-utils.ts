@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import {ScryfallCardObject} from './scryfall-interface'
+import {ScryfallCardObject, ScryfallCardFaceObject} from './scryfall-interface'
 import distance from 'jaro-winkler'
 
 const scryfallEndpoint = 'https://api.scryfall.com/cards/search?q='
@@ -35,6 +35,12 @@ function sendLegalityInfo(card: ScryfallCardObject): string {
 }
 
 function sendCardInfo(card: ScryfallCardObject): string {
+  const cardToInfo = (c: ScryfallCardFaceObject): (string | undefined)[] => [
+    c.mana_cost,
+    c.type_line,
+    c.power && c.toughness ? `${c.power}/${c.toughness}` : undefined,
+    c.oracle_text
+  ]
   const data = {
     title: `${card.name}`,
     url: {
@@ -45,17 +51,11 @@ function sendCardInfo(card: ScryfallCardObject): string {
     image: {
       url: card.image_uris.normal
     },
-    // TODO implement multiple card faces
     info: card.card_faces
-      ? []
-      : [
-          card.mana_cost,
-          card.type_line,
-          card.power && card.toughness
-            ? `${card.power}/${card.toughness}`
-            : null,
-          card.oracle_text
-        ]
+      ? cardToInfo(card.card_faces[0])
+          .concat(':arrows_counterclockwise:')
+          .concat(cardToInfo(card.card_faces[1]))
+      : cardToInfo(card)
   }
 
   return `**[${data.title}](${data.image.url})** - [(Gatherer)](${

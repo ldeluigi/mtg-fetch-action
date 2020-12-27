@@ -1,4 +1,4 @@
-export interface ScryfallCardObject {
+export interface ScryfallCardObject extends ScryfallCardFaceObject {
   object: string
   id: string
   oracle_id: string
@@ -95,7 +95,7 @@ export interface ScryfallCardObject {
 }
 
 export interface ScryfallCardFaceObject {
-  mana_cost: string
+  mana_cost?: string
   name: string
   oracle_text?: string
   power?: string
