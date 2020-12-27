@@ -12,21 +12,8 @@ export interface ScryfallCardObject extends ScryfallCardFaceObject {
   scryfall_uri: string
   layout: string
   highres_image: boolean
-  image_uris: {
-    small: string
-    normal: string
-    large: string
-    png: string
-    art_crop: string
-    border_crop: string
-  }
-  mana_cost?: string
   cmc: number
   card_faces?: ScryfallCardFaceObject[]
-  type_line: string
-  power?: string
-  toughness?: string
-  oracle_text?: string
   colors?: string[]
   color_identity: string[]
   legalities: {
@@ -101,4 +88,12 @@ export interface ScryfallCardFaceObject {
   power?: string
   toughness?: string
   type_line: string
+  image_uris?: {
+    small: string
+    normal: string
+    large: string
+    png: string
+    art_crop: string
+    border_crop: string
+  }
 }

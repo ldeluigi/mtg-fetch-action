@@ -13,7 +13,9 @@ function sendPricingInfo(card: ScryfallCardObject): string {
     title: `${card.name} - TCGPlayer pricing`,
     url: card.purchase_uris.tcgplayer,
     image: {
-      url: card.image_uris.png
+      url: card.card_faces
+        ? card.card_faces[0].image_uris?.png
+        : card.image_uris?.png
     }
   }
   return `### [${data.title}](${data.url})\n<img src="${data.image.url}" alt="${card.name}" width="300"/>`
@@ -49,7 +51,9 @@ function sendCardInfo(card: ScryfallCardObject): string {
       edhrec: card.related_uris.edhrec
     },
     image: {
-      url: card.image_uris.normal
+      url: card.card_faces
+        ? card.card_faces[0].image_uris?.normal
+        : card.image_uris?.normal
     },
     info: card.card_faces
       ? cardToInfo(card.card_faces[0])
@@ -77,7 +81,9 @@ function sendCardImageInfo(card: ScryfallCardObject): string {
       edhrec: card.related_uris.edhrec
     },
     image: {
-      url: card.image_uris.png
+      url: card.card_faces
+        ? card.card_faces[0].image_uris?.png
+        : card.image_uris?.png
     }
   }
 
