@@ -14,7 +14,7 @@ export interface ScryfallCardObject {
   highres_image: boolean
   image_uris: {
     small: string
-    nomral: string
+    normal: string
     large: string
     png: string
     art_crop: string

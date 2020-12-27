@@ -43,7 +43,7 @@ function sendCardInfo(card: ScryfallCardObject): string {
       edhrec: card.related_uris.edhrec
     },
     image: {
-      url: card.image_uris.png
+      url: card.image_uris.normal
     }
   }
 
