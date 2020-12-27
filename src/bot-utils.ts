@@ -44,10 +44,27 @@ function sendCardInfo(card: ScryfallCardObject): string {
     },
     image: {
       url: card.image_uris.normal
-    }
+    },
+    // TODO implement multiple card faces
+    info: card.card_faces
+      ? []
+      : [
+          card.mana_cost,
+          card.type_line,
+          card.power && card.toughness
+            ? `${card.power}/${card.toughness}`
+            : null,
+          card.oracle_text
+        ]
   }
 
-  return `**[${data.title}](${data.image.url})** - [(Gatherer)](${data.url.gatherer}) [(Scryfall)](${data.url.scryfall}) [(EDHREC)](${data.url.edhrec})`
+  return `**[${data.title}](${data.image.url})** - [(Gatherer)](${
+    data.url.gatherer
+  }) [(Scryfall)](${data.url.scryfall}) [(EDHREC)](${data.url.edhrec})\n
+    ${data.info
+      .filter(i => i !== undefined && i !== null)
+      .map(i => `> ${i}`)
+      .join('\n')}`
 }
 
 function sendCardImageInfo(card: ScryfallCardObject): string {

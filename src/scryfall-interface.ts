@@ -20,11 +20,14 @@ export interface ScryfallCardObject {
     art_crop: string
     border_crop: string
   }
-  mana_cost: string
+  mana_cost?: string
   cmc: number
+  card_faces?: ScryfallCardFaceObject[]
   type_line: string
-  oracle_text: string
-  colors: string[]
+  power?: string
+  toughness?: string
+  oracle_text?: string
+  colors?: string[]
   color_identity: string[]
   legalities: {
     standard: string
@@ -89,4 +92,13 @@ export interface ScryfallCardObject {
     cardmarket: string
     cardhoarder: string
   }
+}
+
+export interface ScryfallCardFaceObject {
+  mana_cost: string
+  name: string
+  oracle_text?: string
+  power?: string
+  toughness?: string
+  type_line: string
 }
