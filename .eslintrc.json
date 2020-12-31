@@ -53,8 +53,7 @@
     "@typescript-eslint/semi": ["error", "never"],
     "@typescript-eslint/type-annotation-spacing": "error",
     "@typescript-eslint/unbound-method": "error",
-    "prettier/prettier": "error",
-    "github/array-foreach": "off" // Because it's wrong with forEach((item, index) => ...)
+    "prettier/prettier": "error"
   },
   "env": {
     "node": true,

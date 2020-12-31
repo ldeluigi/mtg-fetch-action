@@ -98,13 +98,13 @@ function pickBest(
   let max = Number.NEGATIVE_INFINITY
   let index = 0
 
-  cardList.forEach((card, i) => {
+  for (const [i, card] of cardList.entries()) {
     const num = distance(card.name.toLowerCase(), cardName.toLowerCase())
     if (num > max) {
       max = num
       index = i
     }
-  })
+  }
 
   return cardList[index]
 }
