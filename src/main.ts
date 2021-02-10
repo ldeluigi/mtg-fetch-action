@@ -34,6 +34,7 @@ async function run(): Promise<void> {
       core.error(
         `${context.actor} does not have admin/write permission: ${actorPermission}`
       )
+      core.info(`${context.actor} permissions: ${actorPermission}`)
       return
     }
 
