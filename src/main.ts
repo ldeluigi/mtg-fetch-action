@@ -30,7 +30,7 @@ async function run(): Promise<void> {
       return
     }
     const actorPermission = permissionRes.data.permission
-    if (!['admin', 'write'].includes(actorPermission)) {
+    if (!['admin', 'write', 'read'].includes(actorPermission)) {
       core.error(
         `${context.actor} does not have admin/write permission: ${actorPermission}`
       )
