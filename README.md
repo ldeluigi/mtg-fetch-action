@@ -19,14 +19,16 @@ Or use it in your own workflow that reacts to `issues`, `pull_request`, `issue_c
 name: Mtg Card Fetch Bot
 
 on:
-  issue_comment:
+issue_comment:
     types: [created]
   issues:
     types: [opened]
   pull_request:
     types: [opened]
   pull_request_review:
-    type: [submitted]
+    types: [submitted]
+  pull_request_review_comment:
+    types: [created]
 
 jobs:
   fetch-card-references:
