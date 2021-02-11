@@ -21,7 +21,7 @@ async function run(): Promise<void> {
       return
     }
 
-    core.info(`${context.eventName} ${context.payload.action}`)
+    core.info(`Event: ${context.eventName} ${context.payload.action}`)
 
     const githubClient = getOctokit(githubToken)
     const permissionRes = await githubClient.repos.getCollaboratorPermissionLevel(
@@ -57,6 +57,7 @@ async function run(): Promise<void> {
         : context.eventName === 'issues'
         ? (context.payload as any).issue.body || ''
         : ''
+    core.info(`Body: ${body}`)
     if (body.length > 0) {
       try {
         // Add answer with result
