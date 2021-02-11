@@ -12,14 +12,14 @@ You can see the syntax handbook by commenting a issue or a pull_request with `!m
 
 Add `.github/workflows/mtg-card-fetch.yml` to your workflows (just copy and paste from [the source](https://github.com/ldeluigi/mtg-fetch-action/blob/master/.github/workflows/mtg-card-fetch.yml)).
 
-Or use it in your own workflow that reacts to `issues`, `pull_request`, `issue_comment`, `pull_request_comment`:
+Or use it in your own workflow that reacts to `issues`, `pull_request`, `issue_comment`, `pull_request_review`, `pull_request_review_comment`:
 
 ```yaml
 # .github/workflows/mtg-card-fetch.yml
 name: Mtg Card Fetch Bot
 
 on:
-issue_comment:
+  issue_comment:
     types: [created]
   issues:
     types: [opened]
