@@ -21,7 +21,14 @@ async function run(): Promise<void> {
       return
     }
 
-    core.info(`Event: ${context.eventName} ${context.payload.action}`)
+    if (
+      !['created', 'submitted', 'opened'].includes(context.payload.action ?? '')
+    ) {
+      core.info(
+        `Ignoring event to avoid possible duplicates: ${context.eventName} ${context.payload.action}`
+      )
+      return
+    }
 
     const githubClient = getOctokit(githubToken)
     const permissionRes = await githubClient.repos.getCollaboratorPermissionLevel(
@@ -48,16 +55,15 @@ async function run(): Promise<void> {
 
     const body: string =
       context.eventName === 'pull_request'
-        ? (context.payload as any).pull_request.body || ''
+        ? (context.payload as any).pull_request.body ?? ''
         : context.eventName === 'pull_request_review'
-        ? (context.payload as any).review.body || ''
-        : context.eventName === 'issue_comment' ||
+        ? (context.payload as any).review.body ?? ''
+        : context.eventName === 'issue_comment' ??
           context.eventName === 'pull_request_review_comment'
-        ? (context.payload as any).comment.body || ''
+        ? (context.payload as any).comment.body ?? ''
         : context.eventName === 'issues'
-        ? (context.payload as any).issue.body || ''
+        ? (context.payload as any).issue.body ?? ''
         : ''
-    core.info(`Body: ${body}`)
     if (body.length > 0) {
       try {
         // Add answer with result
@@ -67,13 +73,19 @@ async function run(): Promise<void> {
           : bot.searchForCards(body))
         if (answer.length > 0) {
           if (context.eventName === 'pull_request_review_comment') {
-            await githubClient.pulls.createReplyForReviewComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request!.number,
-              comment_id: context.payload.comment!.id,
-              body: answer
-            })
+            if (context.payload.pull_request && context.payload.comment) {
+              await githubClient.pulls.createReplyForReviewComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                comment_id: context.payload.comment.id,
+                body: answer
+              })
+            } else {
+              core.warning(
+                'Could not reply to review comment because pull_request number or comment id are missing.'
+              )
+            }
           } else {
             await githubClient.issues.createComment({
               issue_number: context.issue.number,
