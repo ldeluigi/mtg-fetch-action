@@ -11,11 +11,12 @@ async function run(): Promise<void> {
         'issues',
         'issue_comment',
         'pull_request',
-        'pull_request_review'
+        'pull_request_review',
+        'pull_request_review_comment'
       ].includes(context.eventName)
     ) {
       core.warning(
-        `Event name is not in [issues, issue_comment, pull_request, pull_request_review]!`
+        `Event name is not in [issues, issue_comment, pull_request, pull_request_review, pull_request_review_comment]!`
       )
       return
     }
