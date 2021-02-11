@@ -21,6 +21,8 @@ async function run(): Promise<void> {
       return
     }
 
+    core.info(`${context.eventName} ${context.action}`)
+
     const githubClient = getOctokit(githubToken)
     const permissionRes = await githubClient.repos.getCollaboratorPermissionLevel(
       {
