@@ -1,7 +1,7 @@
 name: Mtg Card Fetch Bot
 
 on:
-  issue_comment:
+issue_comment:
     types: [created]
   issues:
     types: [opened]
@@ -9,6 +9,8 @@ on:
     types: [opened]
   pull_request_review:
     types: [submitted]
+  pull_request_review_comment:
+    types: [created]
 
 jobs:
   fetch-card-references:
