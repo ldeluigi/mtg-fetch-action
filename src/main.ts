@@ -24,8 +24,8 @@ async function run(): Promise<void> {
     if (
       !['created', 'submitted', 'opened'].includes(context.payload.action ?? '')
     ) {
-      core.info(
-        `Ignoring event to avoid possible duplicates: ${context.eventName} ${context.payload.action}`
+      core.warning(
+        `Ignoring event to avoid possible duplicates: ${context.eventName} ${context.payload.action}.\nPlease react only to created/submitted/opened events.`
       )
       return
     }
@@ -58,7 +58,7 @@ async function run(): Promise<void> {
         ? (context.payload as any).pull_request.body ?? ''
         : context.eventName === 'pull_request_review'
         ? (context.payload as any).review.body ?? ''
-        : context.eventName === 'issue_comment' ??
+        : context.eventName === 'issue_comment' ||
           context.eventName === 'pull_request_review_comment'
         ? (context.payload as any).comment.body ?? ''
         : context.eventName === 'issues'
