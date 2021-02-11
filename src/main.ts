@@ -7,10 +7,15 @@ async function run(): Promise<void> {
     const githubToken: string = core.getInput('github-token', {required: true})
 
     if (
-      !['issues', 'issue_comment', 'pull_request'].includes(context.eventName)
+      ![
+        'issues',
+        'issue_comment',
+        'pull_request',
+        'pull_request_review'
+      ].includes(context.eventName)
     ) {
       core.warning(
-        `Event name is not in [issues, issue_comment, pull_request]!`
+        `Event name is not in [issues, issue_comment, pull_request, pull_request_review]!`
       )
       return
     }
@@ -32,7 +37,7 @@ async function run(): Promise<void> {
     const actorPermission = permissionRes.data.permission
     if (!['admin', 'write', 'read'].includes(actorPermission)) {
       core.error(
-        `${context.actor} does not have admin/write permission: ${actorPermission}`
+        `${context.actor} does not have admin/write/read permission: ${actorPermission}`
       )
       core.info(`${context.actor} permissions: ${actorPermission}`)
       return
@@ -40,11 +45,14 @@ async function run(): Promise<void> {
 
     const body: string =
       context.eventName === 'pull_request'
-        ? (context.payload as any).pull_request.body
-        : context.eventName === 'issue_comment'
-        ? (context.payload as any).comment.body
+        ? (context.payload as any).pull_request.body || ''
+        : context.eventName === 'pull_request_review'
+        ? (context.payload as any).review.body || ''
+        : context.eventName === 'issue_comment' ||
+          context.eventName === 'pull_request_review_comment'
+        ? (context.payload as any).comment.body || ''
         : context.eventName === 'issues'
-        ? (context.payload as any).issue.body
+        ? (context.payload as any).issue.body || ''
         : ''
     if (body.length > 0) {
       try {
