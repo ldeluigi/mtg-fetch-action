@@ -66,12 +66,22 @@ async function run(): Promise<void> {
           ? bot.printHelp()
           : bot.searchForCards(body))
         if (answer.length > 0) {
-          await githubClient.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: answer
-          })
+          if (context.eventName === 'pull_request_review_comment') {
+            await githubClient.pulls.createReplyForReviewComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request!.number,
+              comment_id: context.payload.comment!.id,
+              body: answer
+            })
+          } else {
+            await githubClient.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: answer
+            })
+          }
         }
       } catch (error) {
         core.setFailed(error.message)
