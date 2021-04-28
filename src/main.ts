@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as bot from './bot-utils'
 import {context, getOctokit} from '@actions/github'
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     const githubToken: string = core.getInput('github-token', {required: true})
 

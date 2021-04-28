@@ -1,7 +1,6 @@
 import * as process from 'process'
-import * as cp from 'child_process'
-import * as path from 'path'
 import * as bot from '../src/bot-utils'
+import {run as testMain} from '../src/main'
 
 test(
   'Test for a card in gatherer',
@@ -9,16 +8,11 @@ test(
     let res = await bot.searchForCards('[[Aluren]]')
     expect(res.length).toBeGreaterThan(1)
   },
-  30 * 1000
+  30 * 1000 // ms
 )
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
+// tests main with an empty event
+test('test runs', async () => {
   process.env['INPUT_GITHUB-TOKEN'] = 'token'
-  const np = process.execPath
-  const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecFileSyncOptions = {
-    env: process.env
-  }
-  cp.execFileSync(np, [ip], options)
+  await testMain()
 })
