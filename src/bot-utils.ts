@@ -1,6 +1,12 @@
 import fetch from 'node-fetch'
 import {ScryfallCardObject, ScryfallCardFaceObject} from './scryfall-interface'
 import distance from 'jaro-winkler'
+import configureThrottling from 'p-throttle'
+const throttler = configureThrottling({
+  interval: 1000,
+  limit: 10
+})
+const throttledFetch = throttler(fetch)
 
 const scryfallEndpoint = 'https://api.scryfall.com/cards/search?q='
 const imageRegex = new RegExp(/(?<=\{\{)(.*?)(?=\}\})/g)
@@ -111,7 +117,7 @@ function pickBest(
 
 async function fetchAndReturn(card: string, mode: number): Promise<string> {
   const encoded = encodeURI(card)
-  const response = await fetch(scryfallEndpoint + encoded)
+  const response = await throttledFetch(scryfallEndpoint + encoded)
   const scryfallResponse = await response.json()
   const cardList = scryfallResponse.data
   if (cardList != null) {
