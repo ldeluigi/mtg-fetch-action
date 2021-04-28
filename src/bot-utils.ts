@@ -4,7 +4,8 @@ import distance from 'jaro-winkler'
 import configureThrottling from 'p-throttle'
 const throttler = configureThrottling({
   interval: 1000,
-  limit: 10
+  limit: 10,
+  strict: true
 })
 const throttledFetch = throttler(fetch)
 
