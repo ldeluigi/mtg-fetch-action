@@ -2,6 +2,8 @@ import fetch from 'node-fetch'
 import {ScryfallCardObject, ScryfallCardFaceObject} from './scryfall-interface'
 import distance from 'jaro-winkler'
 import configureThrottling from 'p-throttle'
+import * as core from '@actions/core'
+
 const throttler = configureThrottling({
   interval: 150,
   limit: 1,
@@ -119,6 +121,7 @@ function pickBest(
 async function fetchAndReturn(card: string, mode: number): Promise<string> {
   const encoded = encodeURI(card)
   const response = await throttledFetch(scryfallEndpoint + encoded)
+  core.info(`Request done at ${new Date()}`)
   const scryfallResponse = await response.json()
   const cardList = scryfallResponse.data
   if (cardList != null) {
