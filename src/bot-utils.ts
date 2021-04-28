@@ -3,7 +3,7 @@ import {ScryfallCardObject, ScryfallCardFaceObject} from './scryfall-interface'
 import distance from 'jaro-winkler'
 import configureThrottling from 'p-throttle'
 const throttler = configureThrottling({
-  interval: 100,
+  interval: 150,
   limit: 1
 })
 const throttledFetch = throttler(fetch)
