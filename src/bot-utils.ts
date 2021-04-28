@@ -5,9 +5,8 @@ import configureThrottling from 'p-throttle'
 import * as core from '@actions/core'
 
 const throttler = configureThrottling({
-  interval: 150,
-  limit: 1,
-  strict: true
+  interval: 200,
+  limit: 1
 })
 const throttledFetch = throttler(fetch)
 
