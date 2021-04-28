@@ -1,7 +1,6 @@
 import fetch from 'node-fetch'
 import {ScryfallCardObject, ScryfallCardFaceObject} from './scryfall-interface'
 import distance from 'jaro-winkler'
-import * as core from '@actions/core'
 import {delay} from './async-utils'
 
 const scryfallEndpoint = 'https://api.scryfall.com/cards/search?q='
@@ -126,7 +125,6 @@ async function fetchAndReturn(card: string, mode: FetchMode): Promise<string> {
   const endTime = Date.now()
   const waitTime = scryfallRateLimit - (endTime - startTime)
   if (waitTime > 0) await delay(waitTime)
-  core.info(`Request done at ${new Date()}`)
   const scryfallResponse = await response.json()
   const cardList = scryfallResponse.data
   if (cardList != null) {
