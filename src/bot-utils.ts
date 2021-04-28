@@ -151,45 +151,25 @@ export function printHelp(): string {
   )
 }
 
-export async function searchForCards(message: string): Promise<string> {
+export function searchForCards(message: string): Promise<string>[] {
   const imageCards = message.match(imageRegex)
   if (imageCards) {
-    return asyncReduce(
-      imageCards.map(async e => fetchAndReturn(e, 1)),
-      a => a.join('\n\n')
-    )
+    return imageCards.map(async e => fetchAndReturn(e, 1))
   }
 
   const gathererCards = message.match(gathererRegex)
   if (gathererCards) {
-    return asyncReduce(
-      gathererCards.map(async e => fetchAndReturn(e, 2)),
-      a => a.join('\n\n')
-    )
+    return gathererCards.map(async e => fetchAndReturn(e, 2))
   }
 
   const legalityCards = message.match(legalityRegex)
   if (legalityCards) {
-    return asyncReduce(
-      legalityCards.map(async e => fetchAndReturn(e, 3)),
-      a => a.join('\n\n')
-    )
+    return legalityCards.map(async e => fetchAndReturn(e, 3))
   }
 
   const pricingCards = message.match(pricingRegex)
   if (pricingCards) {
-    return asyncReduce(
-      pricingCards.map(async e => fetchAndReturn(e, 4)),
-      a => a.join('\n\n')
-    )
+    return pricingCards.map(async e => fetchAndReturn(e, 4))
   }
-  return ''
-}
-
-async function asyncReduce<T, R>(
-  a: Promise<T>[],
-  agg: (_: T[]) => R
-): Promise<R> {
-  const res = await Promise.all(a)
-  return agg(res)
+  return []
 }

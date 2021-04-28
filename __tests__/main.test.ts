@@ -6,7 +6,7 @@ test(
   'Test for a card in gatherer',
   async () => {
     let res = await bot.searchForCards('[[Aluren]]')
-    expect(res.length).toBeGreaterThan(1)
+    expect(res.length).toEqual(1)
   },
   30 * 1000 // ms
 )
