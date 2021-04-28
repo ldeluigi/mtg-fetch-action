@@ -1,20 +1,22 @@
 import fetch from 'node-fetch'
 import {ScryfallCardObject, ScryfallCardFaceObject} from './scryfall-interface'
 import distance from 'jaro-winkler'
-import configureThrottling from 'p-throttle'
 import * as core from '@actions/core'
-
-const throttler = configureThrottling({
-  interval: 200,
-  limit: 1
-})
-const throttledFetch = throttler(fetch)
+import {delay} from './async-utils'
 
 const scryfallEndpoint = 'https://api.scryfall.com/cards/search?q='
 const imageRegex = new RegExp(/(?<=\{\{)(.*?)(?=\}\})/g)
 const gathererRegex = new RegExp(/(?<=\[\[)(.*?)(?=\]\])/g)
 const legalityRegex = new RegExp(/(?<=::)(.*?)(?=::)/g)
 const pricingRegex = new RegExp(/(?<=\(\()(.*?)(?=\)\))/g)
+const scryfallRateLimit = 100
+
+const enum FetchMode {
+  IMAGE,
+  INFO,
+  LEGALITY,
+  PRICING
+}
 
 function sendPricingInfo(card: ScryfallCardObject): string {
   const data = {
@@ -117,22 +119,26 @@ function pickBest(
   return cardList[index]
 }
 
-async function fetchAndReturn(card: string, mode: number): Promise<string> {
+async function fetchAndReturn(card: string, mode: FetchMode): Promise<string> {
   const encoded = encodeURI(card)
-  const response = await throttledFetch(scryfallEndpoint + encoded)
+  const startTime = Date.now()
+  const response = await fetch(scryfallEndpoint + encoded)
+  const endTime = Date.now()
+  const waitTime = scryfallRateLimit - (endTime - startTime)
+  if (waitTime > 0) await delay(waitTime)
   core.info(`Request done at ${new Date()}`)
   const scryfallResponse = await response.json()
   const cardList = scryfallResponse.data
   if (cardList != null) {
     const cardToSend = pickBest(card, cardList)
     switch (mode) {
-      case 1:
+      case FetchMode.IMAGE:
         return sendCardImageInfo(cardToSend)
-      case 2:
+      case FetchMode.INFO:
         return sendCardInfo(cardToSend)
-      case 3:
+      case FetchMode.LEGALITY:
         return sendLegalityInfo(cardToSend)
-      case 4:
+      case FetchMode.PRICING:
         return sendPricingInfo(cardToSend)
     }
     return ''
@@ -153,25 +159,34 @@ export function printHelp(): string {
   )
 }
 
-export function searchForCards(message: string): Promise<string>[] {
+export async function searchForCards(message: string): Promise<string[]> {
+  const res: string[] = []
   const imageCards = message.match(imageRegex)
   if (imageCards) {
-    return imageCards.map(async e => fetchAndReturn(e, 1))
+    for (const e of imageCards) {
+      res.push(await fetchAndReturn(e, FetchMode.IMAGE))
+    }
   }
 
   const gathererCards = message.match(gathererRegex)
   if (gathererCards) {
-    return gathererCards.map(async e => fetchAndReturn(e, 2))
+    for (const e of gathererCards) {
+      res.push(await fetchAndReturn(e, FetchMode.INFO))
+    }
   }
 
   const legalityCards = message.match(legalityRegex)
   if (legalityCards) {
-    return legalityCards.map(async e => fetchAndReturn(e, 3))
+    for (const e of legalityCards) {
+      res.push(await fetchAndReturn(e, FetchMode.LEGALITY))
+    }
   }
 
   const pricingCards = message.match(pricingRegex)
   if (pricingCards) {
-    return pricingCards.map(async e => fetchAndReturn(e, 4))
+    for (const e of pricingCards) {
+      res.push(await fetchAndReturn(e, FetchMode.PRICING))
+    }
   }
-  return []
+  return res
 }

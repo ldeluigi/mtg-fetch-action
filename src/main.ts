@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as bot from './bot-utils'
 import {context, getOctokit} from '@actions/github'
-import {asyncReduce} from './async-utils'
+import {reduce} from './async-utils'
 
 const ANSWER_CHAR_LIMIT = 65535
 
@@ -71,18 +71,18 @@ export async function run(): Promise<void> {
       try {
         // Add answer with result
         const answerSeparator = '\n\n'
-        const answers: string[] = await (body.startsWith('Mtg Fetch Help') ||
-        body.startsWith('!mtg help')
-          ? [bot.printHelp()]
-          : asyncReduce(bot.searchForCards(body), '', (acc, it) => {
-              if (acc.length === 0) {
-                return it.length <= ANSWER_CHAR_LIMIT ? it : null
-              }
-              return acc.length + answerSeparator.length + it.length <=
-                ANSWER_CHAR_LIMIT
-                ? acc + answerSeparator + it
-                : null
-            }))
+        const answers: string[] =
+          body.startsWith('Mtg Fetch Help') || body.startsWith('!mtg help')
+            ? [bot.printHelp()]
+            : reduce(await bot.searchForCards(body), '', (acc, it) => {
+                if (acc.length === 0) {
+                  return it.length <= ANSWER_CHAR_LIMIT ? it : null
+                }
+                return acc.length + answerSeparator.length + it.length <=
+                  ANSWER_CHAR_LIMIT
+                  ? acc + answerSeparator + it
+                  : null
+              })
         for (const answer of answers) {
           if (context.eventName === 'pull_request_review_comment') {
             if (context.payload.pull_request && context.payload.comment) {

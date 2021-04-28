@@ -53,6 +53,8 @@
     "@typescript-eslint/semi": ["error", "never"],
     "@typescript-eslint/type-annotation-spacing": "error",
     "@typescript-eslint/unbound-method": "error",
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"],
     "prettier/prettier": "error"
   },
   "env": {
