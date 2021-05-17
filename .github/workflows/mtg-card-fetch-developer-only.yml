@@ -11,6 +11,8 @@ on:
     types: [submitted]
   pull_request_review_comment:
     types: [created]
+  commit_comment:
+    types: [created]
 
 jobs:
   fetch-card-references:

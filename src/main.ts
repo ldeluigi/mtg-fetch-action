@@ -34,13 +34,12 @@ export async function run(): Promise<void> {
     }
 
     const githubClient = getOctokit(githubToken)
-    const permissionRes = await githubClient.repos.getCollaboratorPermissionLevel(
-      {
+    const permissionRes =
+      await githubClient.rest.repos.getCollaboratorPermissionLevel({
         owner: context.repo.owner,
         repo: context.repo.repo,
         username: context.actor
-      }
-    )
+      })
     if (permissionRes.status !== 200) {
       core.error(
         `Permission check returns non-200 status: ${permissionRes.status}`
@@ -62,7 +61,8 @@ export async function run(): Promise<void> {
         : context.eventName === 'pull_request_review'
         ? (context.payload as any).review.body ?? ''
         : context.eventName === 'issue_comment' ||
-          context.eventName === 'pull_request_review_comment'
+          context.eventName === 'pull_request_review_comment' ||
+          context.eventName === 'commit_comment'
         ? (context.payload as any).comment.body ?? ''
         : context.eventName === 'issues'
         ? (context.payload as any).issue.body ?? ''
@@ -86,7 +86,7 @@ export async function run(): Promise<void> {
         for (const answer of answers) {
           if (context.eventName === 'pull_request_review_comment') {
             if (context.payload.pull_request && context.payload.comment) {
-              await githubClient.pulls.createReplyForReviewComment({
+              await githubClient.rest.pulls.createReplyForReviewComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: context.payload.pull_request.number,
@@ -99,7 +99,7 @@ export async function run(): Promise<void> {
               )
             }
           } else {
-            await githubClient.issues.createComment({
+            await githubClient.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
