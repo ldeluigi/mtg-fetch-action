@@ -39,5 +39,3 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: ldeluigi/action-sem-ver-release@v0
-        with:
-          prefix: Semantic Version Release Action
