@@ -1,0 +1,38 @@
+name: "build-test"
+on: # rebuild any PRs and main branch changes
+  pull_request:
+  push:
+    branches:
+      - master
+      - "releases/*"
+    tags: 
+      - "*"
+
+jobs:
+  build: # make sure build/ci work properly
+    runs-on: ubuntu-latest
+    outputs:
+      should-release: ${{ steps.semver-checkout.outputs.should-release }}
+      version: ${{ steps.semver-checkout.outputs.version }}
+      is-prerelease: ${{ steps.semver-checkout.outputs.is-github-prerelease }}
+    steps:
+      - id: semver-checkout
+        uses: EasyDesk/action-semver-checkout@v1
+      - run: npm install
+      - run: npm run all
+  test: # make sure the action works on a clean machine without building
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+  release:
+    name: GitHub Release Job
+    if: ${{ needs.build.outputs.should-release == 'true' }}
+    needs: [build, test]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: EasyDesk/action-semver-release@v1
+        with:
+          version: ${{ needs.build.outputs.version }}
+          prerelease: ${{ needs.build.outputs.is-prerelease }}
