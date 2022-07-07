@@ -34,6 +34,10 @@ jobs:
   fetch-card-references:
     name: Fetch MTG Card
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - uses: ldeluigi/mtg-fetch-action@v1
 ```
