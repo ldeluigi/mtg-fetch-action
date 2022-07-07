@@ -35,7 +35,6 @@ jobs:
     name: Fetch MTG Card
     runs-on: ubuntu-latest
     permissions:
-      contents: write
       issues: write
       pull-requests: write
     steps:
