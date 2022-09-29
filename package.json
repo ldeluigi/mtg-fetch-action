@@ -28,7 +28,7 @@
   "author": "Luca Deluigi",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.5.0",
+    "@actions/core": "^1.10.0",
     "@actions/github": "^5.0.0"
   },
   "devDependencies": {
