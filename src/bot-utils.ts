@@ -158,6 +158,10 @@ export function printHelp(): string {
 }
 
 export async function searchForCards(message: string): Promise<string[]> {
+  message = message
+    .split(/\r?\n/)
+    .filter(l => l.length > 0 && !l.startsWith('>'))
+    .join('\n')
   const res: string[] = []
   const imageCards = message.match(imageRegex)
   if (imageCards) {
