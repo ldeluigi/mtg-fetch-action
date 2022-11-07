@@ -1,7 +1,15 @@
 import * as core from '@actions/core'
 import * as bot from './bot-utils'
-import {context, getOctokit} from '@actions/github'
 import {reduce} from './async-utils'
+import * as github from '@actions/github'
+import type {
+  PullRequestEvent,
+  PullRequestReviewEvent,
+  IssueCommentEvent,
+  PullRequestReviewCommentEvent,
+  CommitCommentEvent,
+  IssuesEvent
+} from '@octokit/webhooks-types'
 
 const ANSWER_CHAR_LIMIT = 65535
 
@@ -16,7 +24,7 @@ export async function run(): Promise<void> {
         'pull_request',
         'pull_request_review',
         'pull_request_review_comment'
-      ].includes(context.eventName)
+      ].includes(github.context.eventName)
     ) {
       core.warning(
         `Event name is not in [issues, issue_comment, pull_request, pull_request_review, pull_request_review_comment]!`
@@ -25,20 +33,22 @@ export async function run(): Promise<void> {
     }
 
     if (
-      !['created', 'submitted', 'opened'].includes(context.payload.action ?? '')
+      !['created', 'submitted', 'opened'].includes(
+        github.context.payload.action ?? ''
+      )
     ) {
       core.warning(
-        `Ignoring event to avoid possible duplicates: ${context.eventName} ${context.payload.action}.\nPlease react only to created/submitted/opened events.`
+        `Ignoring event to avoid possible duplicates: ${github.context.eventName} ${github.context.payload.action}.\nPlease react only to created/submitted/opened events.`
       )
       return
     }
 
-    const githubClient = getOctokit(githubToken)
+    const githubClient = github.getOctokit(githubToken)
     const permissionRes =
       await githubClient.rest.repos.getCollaboratorPermissionLevel({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        username: context.actor
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        username: github.context.actor
       })
     if (permissionRes.status !== 200) {
       core.error(
@@ -49,23 +59,28 @@ export async function run(): Promise<void> {
     const actorPermission = permissionRes.data.permission
     if (!['admin', 'write', 'read'].includes(actorPermission)) {
       core.error(
-        `${context.actor} does not have admin/write/read permission: ${actorPermission}`
+        `${github.context.actor} does not have admin/write/read permission: ${actorPermission}`
       )
-      core.info(`${context.actor} permissions: ${actorPermission}`)
+      core.info(`${github.context.actor} permissions: ${actorPermission}`)
       return
     }
 
     const body: string =
-      context.eventName === 'pull_request'
-        ? (context.payload as any).pull_request.body ?? ''
-        : context.eventName === 'pull_request_review'
-        ? (context.payload as any).review.body ?? ''
-        : context.eventName === 'issue_comment' ||
-          context.eventName === 'pull_request_review_comment' ||
-          context.eventName === 'commit_comment'
-        ? (context.payload as any).comment.body ?? ''
-        : context.eventName === 'issues'
-        ? (context.payload as any).issue.body ?? ''
+      github.context.eventName === 'pull_request'
+        ? (github.context.payload as PullRequestEvent).pull_request.body ?? ''
+        : github.context.eventName === 'pull_request_review'
+        ? (github.context.payload as PullRequestReviewEvent).review.body ?? ''
+        : github.context.eventName === 'issue_comment' ||
+          github.context.eventName === 'pull_request_review_comment' ||
+          github.context.eventName === 'commit_comment'
+        ? (
+            github.context.payload as
+              | IssueCommentEvent
+              | PullRequestReviewCommentEvent
+              | CommitCommentEvent
+          ).comment.body ?? ''
+        : github.context.eventName === 'issues'
+        ? (github.context.payload as IssuesEvent).issue.body ?? ''
         : ''
     if (body.length > 0) {
       try {
@@ -84,13 +99,16 @@ export async function run(): Promise<void> {
                   : null
               })
         for (const answer of answers) {
-          if (context.eventName === 'pull_request_review_comment') {
-            if (context.payload.pull_request && context.payload.comment) {
+          if (github.context.eventName === 'pull_request_review_comment') {
+            if (
+              github.context.payload.pull_request &&
+              github.context.payload.comment
+            ) {
               await githubClient.rest.pulls.createReplyForReviewComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.payload.pull_request.number,
-                comment_id: context.payload.comment.id,
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                pull_number: github.context.payload.pull_request.number,
+                comment_id: github.context.payload.comment.id,
                 body: answer
               })
             } else {
@@ -100,18 +118,18 @@ export async function run(): Promise<void> {
             }
           } else {
             await githubClient.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+              issue_number: github.context.issue.number,
+              owner: github.context.repo.owner,
+              repo: github.context.repo.repo,
               body: answer
             })
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         core.setFailed(error.message)
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     core.setFailed(error.message)
   }
 }

@@ -9,6 +9,7 @@
   },
   "rules": {
     "indent": "off",
+    "i18n-text/no-en": "off",
     "@typescript-eslint/indent": "off",
     "eslint-comments/no-use": "off",
     "import/no-namespace": "off",

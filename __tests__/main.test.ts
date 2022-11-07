@@ -1,6 +1,7 @@
 import * as process from 'process'
 import * as bot from '../src/bot-utils'
 import {run as testMain} from '../src/main'
+
 jest.mock('@actions/core')
 
 test(

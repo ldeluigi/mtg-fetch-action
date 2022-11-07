@@ -10,5 +10,5 @@ inputs:
     description: "The GitHub token used to authenticate and post a reply."
 
 runs:
-  using: "node12"
+  using: "node16"
   main: "dist/index.js"
