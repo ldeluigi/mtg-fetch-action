@@ -2,7 +2,7 @@ name: "Mtg Fetch Action"
 description: "This Action answer to issues, comments and pull requests fetching Magic the Gathering cards preview."
 author: "Luca Deluigi"
 branding:
-  icon: 'star'  
+  icon: 'star'
   color: 'purple'
 inputs:
   github-token:
@@ -10,5 +10,5 @@ inputs:
     description: "The GitHub token used to authenticate and post a reply."
 
 runs:
-  using: "node16"
+  using: "node24"
   main: "dist/index.js"

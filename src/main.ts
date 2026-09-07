@@ -7,39 +7,79 @@ import type {
   PullRequestReviewEvent,
   IssueCommentEvent,
   PullRequestReviewCommentEvent,
-  CommitCommentEvent,
   IssuesEvent
 } from '@octokit/webhooks-types'
 
 const ANSWER_CHAR_LIMIT = 65535
+const ANSWER_SEPARATOR = '\n\n'
+const HELP_PREFIXES = ['Mtg Fetch Help', '!mtg help']
+
+const SUPPORTED_EVENTS = [
+  'issues',
+  'issue_comment',
+  'pull_request',
+  'pull_request_review',
+  'pull_request_review_comment'
+]
+const SUPPORTED_ACTIONS = ['created', 'submitted', 'opened']
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
+/** Reads the user supplied text out of the event payload. */
+function eventBody(): string {
+  const payload = github.context.payload
+  switch (github.context.eventName) {
+    case 'pull_request':
+      return (payload as PullRequestEvent).pull_request?.body ?? ''
+    case 'pull_request_review':
+      return (payload as PullRequestReviewEvent).review?.body ?? ''
+    case 'issue_comment':
+    case 'pull_request_review_comment':
+      return (
+        (payload as IssueCommentEvent | PullRequestReviewCommentEvent).comment
+          ?.body ?? ''
+      )
+    case 'issues':
+      return (payload as IssuesEvent).issue?.body ?? ''
+    default:
+      return ''
+  }
+}
+
+/** Splits the answers into as few comments as possible, each one within the
+ * GitHub comment size limit. Answers that cannot fit on their own are
+ * dropped rather than posted as an empty comment. */
+function buildAnswers(parts: string[]): string[] {
+  return reduce(parts, '', (acc, it) => {
+    if (acc.length === 0) {
+      return it.length <= ANSWER_CHAR_LIMIT ? it : null
+    }
+    return acc.length + ANSWER_SEPARATOR.length + it.length <= ANSWER_CHAR_LIMIT
+      ? acc + ANSWER_SEPARATOR + it
+      : null
+  }).filter(answer => answer.length > 0)
+}
 
 export async function run(): Promise<void> {
   try {
     const githubToken: string = core.getInput('github-token', {required: true})
 
-    if (
-      ![
-        'issues',
-        'issue_comment',
-        'pull_request',
-        'pull_request_review',
-        'pull_request_review_comment'
-      ].includes(github.context.eventName)
-    ) {
+    if (!SUPPORTED_EVENTS.includes(github.context.eventName)) {
+      core.warning(`Event name is not in [${SUPPORTED_EVENTS.join(', ')}]!`)
+      return
+    }
+
+    if (!SUPPORTED_ACTIONS.includes(github.context.payload.action ?? '')) {
       core.warning(
-        `Event name is not in [issues, issue_comment, pull_request, pull_request_review, pull_request_review_comment]!`
+        `Ignoring event to avoid possible duplicates: ${github.context.eventName} ${github.context.payload.action}.\nPlease react only to created/submitted/opened events.`
       )
       return
     }
 
-    if (
-      !['created', 'submitted', 'opened'].includes(
-        github.context.payload.action ?? ''
-      )
-    ) {
-      core.warning(
-        `Ignoring event to avoid possible duplicates: ${github.context.eventName} ${github.context.payload.action}.\nPlease react only to created/submitted/opened events.`
-      )
+    const body = eventBody()
+    if (body.length === 0) {
       return
     }
 
@@ -61,76 +101,42 @@ export async function run(): Promise<void> {
       core.error(
         `${github.context.actor} does not have admin/write/read permission: ${actorPermission}`
       )
-      core.info(`${github.context.actor} permissions: ${actorPermission}`)
       return
     }
 
-    const body: string =
-      github.context.eventName === 'pull_request'
-        ? (github.context.payload as PullRequestEvent).pull_request.body ?? ''
-        : github.context.eventName === 'pull_request_review'
-        ? (github.context.payload as PullRequestReviewEvent).review.body ?? ''
-        : github.context.eventName === 'issue_comment' ||
-          github.context.eventName === 'pull_request_review_comment' ||
-          github.context.eventName === 'commit_comment'
-        ? (
-            github.context.payload as
-              | IssueCommentEvent
-              | PullRequestReviewCommentEvent
-              | CommitCommentEvent
-          ).comment.body ?? ''
-        : github.context.eventName === 'issues'
-        ? (github.context.payload as IssuesEvent).issue.body ?? ''
-        : ''
-    if (body.length > 0) {
-      try {
-        // Add answer with result
-        const answerSeparator = '\n\n'
-        const answers: string[] =
-          body.startsWith('Mtg Fetch Help') || body.startsWith('!mtg help')
-            ? [bot.printHelp()]
-            : reduce(await bot.searchForCards(body), '', (acc, it) => {
-                if (acc.length === 0) {
-                  return it.length <= ANSWER_CHAR_LIMIT ? it : null
-                }
-                return acc.length + answerSeparator.length + it.length <=
-                  ANSWER_CHAR_LIMIT
-                  ? acc + answerSeparator + it
-                  : null
-              })
-        for (const answer of answers) {
-          if (github.context.eventName === 'pull_request_review_comment') {
-            if (
-              github.context.payload.pull_request &&
-              github.context.payload.comment
-            ) {
-              await githubClient.rest.pulls.createReplyForReviewComment({
-                owner: github.context.repo.owner,
-                repo: github.context.repo.repo,
-                pull_number: github.context.payload.pull_request.number,
-                comment_id: github.context.payload.comment.id,
-                body: answer
-              })
-            } else {
-              core.warning(
-                'Could not reply to review comment because pull_request number or comment id are missing.'
-              )
-            }
-          } else {
-            await githubClient.rest.issues.createComment({
-              issue_number: github.context.issue.number,
-              owner: github.context.repo.owner,
-              repo: github.context.repo.repo,
-              body: answer
-            })
-          }
+    const answers = HELP_PREFIXES.some(prefix => body.startsWith(prefix))
+      ? [bot.printHelp()]
+      : buildAnswers(await bot.searchForCards(body))
+
+    for (const answer of answers) {
+      if (github.context.eventName === 'pull_request_review_comment') {
+        if (
+          github.context.payload.pull_request &&
+          github.context.payload.comment
+        ) {
+          await githubClient.rest.pulls.createReplyForReviewComment({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            pull_number: github.context.payload.pull_request.number,
+            comment_id: github.context.payload.comment.id,
+            body: answer
+          })
+        } else {
+          core.warning(
+            'Could not reply to review comment because pull_request number or comment id are missing.'
+          )
         }
-      } catch (error: any) {
-        core.setFailed(error.message)
+      } else {
+        await githubClient.rest.issues.createComment({
+          issue_number: github.context.issue.number,
+          owner: github.context.repo.owner,
+          repo: github.context.repo.repo,
+          body: answer
+        })
       }
     }
-  } catch (error: any) {
-    core.setFailed(error.message)
+  } catch (error: unknown) {
+    core.setFailed(errorMessage(error))
   }
 }
 
